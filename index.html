@@ -1,106 +1,42 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>M3U8 Player</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      text-align: center;
-      margin: 20px;
-    }
-    #video-container {
-      position: relative;
-      width: 80%;
-      margin: 0 auto;
-    }
-    video {
-      width: 100%;
-      max-width: 800px;
-      height: auto;
-      border: 1px solid #ccc;
-      border-radius: 5px;
-    }
-    #controls {
-      margin-top: 10px;
-    }
-    .quality-buttons {
-      margin: 10px 5px;
-    }
-  </style>
-  <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Video Player</title>
+    
+    <!-- Video.js CSS -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/video.js/8.3.0/video-js.min.css" rel="stylesheet">
+    
+    <!-- Custom Styles -->
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <h1>M3U8 Video Player</h1>
-  
-  <div id="video-container">
-    <video id="video" controls></video>
-  </div>
-  
-  <div id="controls">
-    <input type="text" id="videoUrl" placeholder="Enter M3U8 URL" style="width: 60%; padding: 5px;">
-    <button onclick="loadVideo()">Load Video</button>
-  </div>
-  
-  <div id="quality-controls"></div>
 
-  <script>
-    const video = document.getElementById('video');
-    const videoUrlInput = document.getElementById('videoUrl');
-    const qualityControls = document.getElementById('quality-controls');
-    let hls;
+    <div class="container">
+        <h2>Advanced Video Player</h2>
+        
+        <!-- Video Player -->
+        <video id="videoPlayer" class="video-js vjs-default-skin" controls preload="auto" width="640" height="360">
+            <source id="videoSource" src="" type="application/x-mpegURL">
+            Your browser does not support the video tag.
+        </video>
 
-    function loadVideo() {
-      const url = videoUrlInput.value.trim();
+        <!-- Input Field & Button -->
+        <div class="controls">
+            <input type="text" id="videoURL" placeholder="Enter M3U8 / Video URL">
+            <button onclick="loadVideo()">Load Video</button>
+        </div>
+    </div>
 
-      if (!url) {
-        alert('Please enter a valid M3U8 URL.');
-        return;
-      }
+    <!-- Video.js Library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/video.js/8.3.0/video.min.js"></script>
+    
+    <!-- Video.js HLS Support -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/videojs-contrib-hls/5.15.0/videojs-contrib-hls.min.js"></script>
+    
+    <!-- Custom Script -->
+    <script src="script.js"></script>
 
-      if (Hls.isSupported()) {
-        if (hls) {
-          hls.destroy(); // Destroy previous instance
-        }
-        hls = new Hls();
-        hls.loadSource(url);
-        hls.attachMedia(video);
-
-        hls.on(Hls.Events.MANIFEST_PARSED, () => {
-          createQualityButtons(hls.levels);
-        });
-      } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
-        video.src = url;
-      } else {
-        alert('Your browser does not support HLS streaming.');
-      }
-    }
-
-    function createQualityButtons(levels) {
-      qualityControls.innerHTML = ''; // Clear previous buttons
-
-      levels.forEach((level, index) => {
-        const button = document.createElement('button');
-        button.innerText = level.height ? `${level.height}p` : `Auto`;
-        button.className = 'quality-buttons';
-        button.onclick = () => setQuality(index);
-        qualityControls.appendChild(button);
-      });
-
-      // Add auto-quality button
-      const autoButton = document.createElement('button');
-      autoButton.innerText = 'Auto';
-      autoButton.className = 'quality-buttons';
-      autoButton.onclick = () => setQuality(-1);
-      qualityControls.appendChild(autoButton);
-    }
-
-    function setQuality(levelIndex) {
-      if (hls) {
-        hls.currentLevel = levelIndex;
-      }
-    }
-  </script>
 </body>
 </html>
